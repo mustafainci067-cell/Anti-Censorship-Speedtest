@@ -1,2 +1,13 @@
+# Compiled binaries & build outputs
+bin/
+dist/
 *.exe
 *.exe~
+*.out
+*.test
+
+# OS & editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
