@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${REPO_ROOT}"
+
 if ! command -v go >/dev/null 2>&1; then
   echo "Error: Go toolchain not found in PATH." >&2
   exit 1
@@ -12,13 +15,13 @@ echo "Syncing Go modules..."
 go mod tidy
 
 echo "Building CLI for Windows (amd64)..."
-GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o bin/speedtest-cli-windows.exe ./main.go
+GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o bin/speedtest-cli-windows.exe ./cmd/cli
 
 echo "Building CLI for Linux (amd64)..."
-GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/speedtest-cli-linux ./main.go
+GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/speedtest-cli-linux ./cmd/cli
 
 echo "Building CLI for macOS (arm64)..."
-GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o bin/speedtest-cli-mac ./main.go
+GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o bin/speedtest-cli-mac ./cmd/cli
 
 HOST_OS="$(go env GOOS)"
 if command -v gcc >/dev/null 2>&1; then
@@ -26,7 +29,6 @@ if command -v gcc >/dev/null 2>&1; then
   case "${HOST_OS}" in
     windows)
       CGO_ENABLED=1 go build -ldflags="-s -w -H=windowsgui" -o bin/NetworkToolkit.exe ./cmd/gui
-      cp -f bin/NetworkToolkit.exe ./NetworkToolkit.exe
       ;;
     linux)
       CGO_ENABLED=1 go build -ldflags="-s -w" -o bin/network-toolkit-linux ./cmd/gui
